@@ -60,10 +60,16 @@ const Post = ({ post, postedBy }) => {
 	if (!user) return null;
 	return (
 		<Link to={`/${user.username}/post/${post._id}`}>
-			<Flex gap={3} mb={4} py={5}>
+			<Flex gap={3} mb={4} py={5} borderWidth="0.5px" 
+       									borderColor="black" 
+										borderRadius="lg" 
+										bg="#FFFCF5"
+										pl= {5}
+										pr= {10}>
 				<Flex flexDirection={"column"} alignItems={"center"}>
 					<Avatar
 						size='md'
+						color={"blackAlpha.900"}
 						name={user.name}
 						src={user?.profilePic}
 						onClick={(e) => {
@@ -71,9 +77,9 @@ const Post = ({ post, postedBy }) => {
 							navigate(`/${user.username}`);
 						}}
 					/>
-					<Box w='1px' h={"full"} bg='gray.light' my={2}></Box>
+					{/* <Box w='1px' h={"full"} bg='gray.light' my={2}></Box> */}
 					<Box position={"relative"} w={"full"}>
-						{post.replies.length === 0 && <Text textAlign={"center"}>🥱</Text>}
+						{/* {post.replies.length === 0 && <Text textAlign={"center"}>🥱</Text>} */}
 						{post.replies[0] && (
 							<Avatar
 								size='xs'
@@ -117,6 +123,7 @@ const Post = ({ post, postedBy }) => {
 							<Text
 								fontSize={"sm"}
 								fontWeight={"bold"}
+								color={'blackAlpha.900'}
 								onClick={(e) => {
 									e.preventDefault();
 									navigate(`/${user.username}`);

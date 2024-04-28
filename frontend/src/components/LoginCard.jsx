@@ -64,9 +64,12 @@ export default function LoginCard() {
 				</Stack>
 				<Box
 					rounded={"lg"}
-					bg={useColorModeValue("white", "gray.dark")}
-					boxShadow={"lg"}
+					bg={'#FEF5E3'}
+					color={useColorModeValue("black", "white")} 
+					boxShadow={"2xl"}
 					p={8}
+					borderWidth="2px" 
+					borderColor={useColorModeValue("black", "gray.dark")}
 					w={{
 						base: "full",
 						sm: "400px",
@@ -74,19 +77,25 @@ export default function LoginCard() {
 				>
 					<Stack spacing={4}>
 						<FormControl isRequired>
-							<FormLabel>Username</FormLabel>
+							<FormLabel color={"blackAlpha.900"}>Username</FormLabel>
 							<Input
 								type='text'
+								borderWidth='2px'
+								borderColor = {'blackAlpha.400'}
 								value={inputs.username}
+								color={'blackAlpha.600'}
 								onChange={(e) => setInputs((inputs) => ({ ...inputs, username: e.target.value }))}
 							/>
 						</FormControl>
 						<FormControl isRequired>
-							<FormLabel>Password</FormLabel>
+							<FormLabel color={"blackAlpha.900"}>Password</FormLabel>
 							<InputGroup>
 								<Input
 									type={showPassword ? "text" : "password"}
+									borderWidth='2px'
+									borderColor = {'blackAlpha.400'}
 									value={inputs.password}
+									color={'blackAlpha.600'}
 									onChange={(e) => setInputs((inputs) => ({ ...inputs, password: e.target.value }))}
 								/>
 								<InputRightElement h={"full"}>
@@ -115,7 +124,7 @@ export default function LoginCard() {
 							</Button>
 						</Stack>
 						<Stack pt={6}>
-							<Text align={"center"}>
+							<Text align={"center"} color={"blackAlpha.400"}>
 								Don&apos;t have an account?{" "}
 								<Link color={"blue.400"} onClick={() => setAuthScreen("signup")}>
 									Sign up
