@@ -65,14 +65,29 @@ export default function SignupCard() {
 						Sign up
 					</Heading>
 				</Stack>
-				<Box rounded={"lg"} bg={useColorModeValue("white", "gray.dark")} boxShadow={"lg"} p={8}>
-					<Stack spacing={4}>
+				<Box
+					rounded={"lg"}
+					bg={'#FEF5E3'}
+					color={useColorModeValue("black", "white")} 
+					boxShadow={"2xl"}
+					p={8}
+					borderWidth="2px" 
+					borderColor={useColorModeValue("black", "gray.dark")}
+					w={{
+						base: "full",
+						sm: "400px",
+					}}
+				>					
+				<Stack spacing={4}>
 						<HStack>
 							<Box>
 								<FormControl isRequired>
-									<FormLabel>Full name</FormLabel>
+									<FormLabel color={"blackAlpha.900"}>Full name</FormLabel>
 									<Input
 										type='text'
+										color={'blackAlpha.600'}
+										borderWidth='2px'
+										borderColor = {'blackAlpha.400'}
 										onChange={(e) => setInputs({ ...inputs, name: e.target.value })}
 										value={inputs.name}
 									/>
@@ -80,9 +95,12 @@ export default function SignupCard() {
 							</Box>
 							<Box>
 								<FormControl isRequired>
-									<FormLabel>Username</FormLabel>
+									<FormLabel color={"blackAlpha.900"}>Username</FormLabel>
 									<Input
 										type='text'
+										color={'blackAlpha.600'}
+										borderWidth='2px'
+										borderColor = {'blackAlpha.400'}
 										onChange={(e) => setInputs({ ...inputs, username: e.target.value })}
 										value={inputs.username}
 									/>
@@ -90,18 +108,24 @@ export default function SignupCard() {
 							</Box>
 						</HStack>
 						<FormControl isRequired>
-							<FormLabel>Email address</FormLabel>
+							<FormLabel color={"blackAlpha.900"}>Email address</FormLabel>
 							<Input
 								type='email'
+								color={'blackAlpha.600'}
+								borderWidth='2px'
+								borderColor = {'blackAlpha.400'}
 								onChange={(e) => setInputs({ ...inputs, email: e.target.value })}
 								value={inputs.email}
 							/>
 						</FormControl>
 						<FormControl isRequired>
-							<FormLabel>Password</FormLabel>
+							<FormLabel color={"blackAlpha.900"}>Password</FormLabel>
 							<InputGroup>
 								<Input
 									type={showPassword ? "text" : "password"}
+									color={'blackAlpha.600'}
+									borderWidth='2px'
+									borderColor = {'blackAlpha.400'}
 									onChange={(e) => setInputs({ ...inputs, password: e.target.value })}
 									value={inputs.password}
 								/>
@@ -130,7 +154,7 @@ export default function SignupCard() {
 							</Button>
 						</Stack>
 						<Stack pt={6}>
-							<Text align={"center"}>
+							<Text align={"center"} color={"blackAlpha.400"}>
 								Already a user?{" "}
 								<Link color={"blue.400"} onClick={() => setAuthScreen("login")}>
 									Login
