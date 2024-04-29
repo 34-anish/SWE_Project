@@ -7,7 +7,6 @@ const SuggestedUser = ({ user }) => {
 
 	return (
 		<Flex gap={2} justifyContent={"space-between"} alignItems={"center"}>
-			{/* left side */}
 			<Flex gap={2} as={Link} to={`${user.username}`}>
 				<Avatar src={user.profilePic} />
 				<Box>
@@ -19,7 +18,7 @@ const SuggestedUser = ({ user }) => {
 					</Text>
 				</Box>
 			</Flex>
-			{/* right side */}
+
 			<Button
 				size={"sm"}
 				color={following ? "black" : "white"}
@@ -31,7 +30,7 @@ const SuggestedUser = ({ user }) => {
 					opacity: ".8",
 				}}
 			>
-				{following ? "Remove" : "Connect"}
+				{following ? "Remove Connect" : "Connect"}
 			</Button>
 		</Flex>
 	);

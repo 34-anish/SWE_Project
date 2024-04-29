@@ -109,32 +109,107 @@ const logoutUser = (req, res) => {
 };
 
 const followUnFollowUser = async (req, res) => {
+	// try {
+	// 	const { id } = req.params;
+	// 	const userToModify = await User.findById(id);
+	// 	const currentUser = await User.findById(req.user._id);
+
+	// 	if (id === req.user._id.toString())
+	// 		return res.status(400).json({ error: "You cannot follow/unfollow yourself" });
+
+	// 	if (!userToModify || !currentUser) return res.status(400).json({ error: "User not found" });
+
+	// 	const isFollowing = currentUser.following.includes(id);
+
+	// 	if (isFollowing) {
+	// 		// Unfollow user
+	// 		await User.findByIdAndUpdate(id, { $pull: { followers: req.user._id } });
+	// 		await User.findByIdAndUpdate(req.user._id, { $pull: { following: id } });
+	// 		res.status(200).json({ message: "User unfollowed successfully" });
+	// 	} else {
+	// 		// Follow user
+	// 		await User.findByIdAndUpdate(id, { $push: { followers: req.user._id } });
+	// 		await User.findByIdAndUpdate(req.user._id, { $push: { following: id } });
+	// 		res.status(200).json({ message: "User followed successfully" });
+	// 	}
+	// } catch (err) {
+	// 	res.status(500).json({ error: err.message });
+	// 	console.log("Error in followUnFollowUser: ", err.message);
+	// }
+
 	try {
 		const { id } = req.params;
 		const userToModify = await User.findById(id);
 		const currentUser = await User.findById(req.user._id);
-
+	  
 		if (id === req.user._id.toString())
-			return res.status(400).json({ error: "You cannot follow/unfollow yourself" });
-
+		  return res.status(400).json({ error: "You cannot follow/unfollow yourself" });
+	  
 		if (!userToModify || !currentUser) return res.status(400).json({ error: "User not found" });
-
-		const isFollowing = currentUser.following.includes(id);
-
-		if (isFollowing) {
-			// Unfollow user
-			await User.findByIdAndUpdate(id, { $pull: { followers: req.user._id } });
-			await User.findByIdAndUpdate(req.user._id, { $pull: { following: id } });
-			res.status(200).json({ message: "User unfollowed successfully" });
+	  
+		const hasRequested = userToModify.followRequests.includes(req.user._id.toString());
+	  
+		if (hasRequested) {
+		  // Cancel follow request
+		  await User.findByIdAndUpdate(id, { $pull: { followRequests: req.user._id } });
+		  res.status(200).json({ message: "Follow request cancelled" });
 		} else {
-			// Follow user
-			await User.findByIdAndUpdate(id, { $push: { followers: req.user._id } });
-			await User.findByIdAndUpdate(req.user._id, { $push: { following: id } });
-			res.status(200).json({ message: "User followed successfully" });
+		  // Send follow request
+		  await User.findByIdAndUpdate(id, { $push: { followRequests: req.user._id } });
+		  res.status(200).json({ message: "Follow request sent" });
 		}
-	} catch (err) {
+	  } catch (err) {
 		res.status(500).json({ error: err.message });
 		console.log("Error in followUnFollowUser: ", err.message);
+	  }
+};
+
+
+const acceptFollowRequest = async (req, res) => {
+	try {
+	  const { id } = req.params; // ID of the user who sent the follow request
+	  const currentUser = await User.findById(req.user._id);
+  
+	  if (!currentUser) return res.status(400).json({ error: "User not found" });
+  
+	  // Check if the follow request exists
+	  const hasRequested = currentUser.followRequests.includes(id);
+	  if (!hasRequested) {
+		return res.status(400).json({ error: "Follow request not found" });
+	  }
+  
+	  // Remove the follow request
+	  await User.findByIdAndUpdate(req.user._id, { $pull: { followRequests: id } });
+  
+	  // Add the requester to the current user's followers list
+	  await User.findByIdAndUpdate(req.user._id, { $push: { followers: id } });
+  
+	  await User.findByIdAndUpdate(id, { $push: { following: req.user._id } });
+
+	  res.status(200).json({ name: req.user.username, _id: req.user._id, message: "Follow request accepted successfully" });
+	} catch (error) {
+	  res.status(500).json({ error: "An error occurred while accepting the follow request" });
+	}
+  };
+ 
+const deleteFollowRequest = async (req, res) => {
+	try {
+	  const user = await User.findById(req.user._id);
+	  if (!user) {
+		return res.status(404).json({ error: "User not found" });
+	  }
+  
+	  const requesterIndex = user.followRequests.indexOf(req.params.id);
+	  if (requesterIndex === -1) {
+		return res.status(404).json({ error: "Follow request not found" });
+	  }
+  
+	  // Remove the follow request
+	  await User.findByIdAndUpdate(req.user._id, { $pull: { followRequests: req.params.id } });
+  
+	  res.status(200).json({ message: "Follow request deleted" });
+	} catch (error) {
+	  res.status(500).json({ error: error.message });
 	}
 };
 
@@ -239,12 +314,37 @@ const freezeAccount = async (req, res) => {
 	}
 };
 
+const followUser = async (req, res) => {
+	try {
+	  if (req.user._id.toString() === req.params.id) {
+		return res.status(400).json({ error: "You can't follow yourself" });
+	  }
+  
+	  const requester = await User.findById(req.user._id);
+	  const userBeingFollowed = await User.findById(req.params.id);
+  
+	  // Add the user being followed to the requester's following list
+	  requester.following.push(req.params.id);
+	  await requester.save();
+  
+	  // Add the requester to the user being followed's followers list
+	  userBeingFollowed.followers.push(req.user._id);
+	  await userBeingFollowed.save();
+  
+	  res.json({ message: "Followed user successfully" });
+	} catch (error) {
+	  res.status(500).json({ error: error.message });
+	}
+  };
 export {
 	signupUser,
 	loginUser,
 	logoutUser,
 	followUnFollowUser,
+	acceptFollowRequest,
+	deleteFollowRequest,
 	updateUser,
+	followUser,
 	getUserProfile,
 	getSuggestedUsers,
 	freezeAccount,

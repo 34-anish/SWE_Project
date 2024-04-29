@@ -4,13 +4,28 @@ import { Button } from "@chakra-ui/react";
 import { useRecoilValue } from "recoil";
 import userAtom from "../atoms/userAtom";
 import { Link as RouterLink } from "react-router-dom";
-import useFollowUnfollow from "../hooks/useFollowUnfollow";
+// import useFollowUnfollow from "../hooks/useFollowUnfollow";
+import  useFollowUnfollow  from '../hooks/useFollowUnfollow';
+import React, { useEffect, useState } from 'react';
 
 const UserHeader = ({ user }) => {
 
 	const currentUser = useRecoilValue(userAtom); 
-	const { handleFollowUnfollow, following, updating } = useFollowUnfollow(user);
+	const { handleFollowUnfollow, handleAcceptFollowRequest, handleDeleteFollowRequest, following, updating } = useFollowUnfollow(user);
+	const [requesters, setRequesters] = useState([]);
 
+	useEffect(() => {
+	  const fetchRequesters = async () => {
+		const fetchedRequesters = await Promise.all(
+		  user.followRequests.map((requesterId) =>
+			fetch(`/api/users/profile/${requesterId}`).then((res) => res.json())
+		  )
+		);
+		setRequesters(fetchedRequesters);
+	  };
+  
+	  fetchRequesters();
+	}, [user.followRequests]);
 	
 	return (
 		<VStack gap={4} alignItems={"start"}>
@@ -21,6 +36,9 @@ const UserHeader = ({ user }) => {
 					</Text>
 				</Box>
 				<Box>
+					
+				
+				{/* <Box> */}
 					{user.profilePic && (
 						<Avatar
 							name={user.name}
@@ -45,12 +63,58 @@ const UserHeader = ({ user }) => {
 			</Flex>
 
 			<Text>{user.bio}</Text>
-
-			{currentUser?._id !== user._id && (
-				<Button size={"sm"} onClick={handleFollowUnfollow} isLoading={updating}>
-					{following ? "Remove" : "Connect"}
-				</Button>
-			)}
+			{/* <Box>
+				<Text fontSize="lg" fontWeight="bold">Connection Requests</Text>
+				{user.followRequests.length > 0 ? (
+					user.followRequests.map((requesterId) => (
+					<Box key={requesterId} p={3} border="1px solid" borderColor="gray.200" borderRadius="md" mb={3}>
+						<Text>{requesterId}</Text>  {
+						// replace with user name
+						}
+						<Button onClick={() => handleAcceptFollowRequest(requesterId)} size="sm" colorScheme="blue" mt={2}>
+						Accept
+						</Button>
+					</Box>
+					))
+				) : (
+					<Text color="gray.500">No connection requests</Text>
+				)}
+			</Box> */}
+			{currentUser._id === user._id && (<Box>
+				<Text fontSize="lg" fontWeight="bold">Connection Requests</Text>
+				{requesters.length > 0 ? (
+					requesters.map((requester) => (
+					<Box key={requester._id} p={3} border="1px solid" borderColor="gray.200" borderRadius="md" mb={3}>
+						<Text>{requester.username}</Text>
+						<Button onClick={() => handleAcceptFollowRequest(requester._id)} size="sm" colorScheme="blue" mt={2}>
+						Accept
+						</Button>
+						<Button onClick={() => handleDeleteFollowRequest(requester._id)} size="sm" colorScheme="red" mt={2} ml={2}>
+							Delete
+						</Button>
+						
+					</Box>
+					))
+				) : (
+					<Text color="gray.500">No connection requests</Text>
+				)}
+			</Box>)}
+			{currentUser?._id !== user._id ? (
+						<Button onClick={handleFollowUnfollow} isLoading={updating} size={"sm"}>
+						{following ? "Remove" : "Connect"}
+						</Button>
+					) : null
+					// : (
+					// 	// <Button onClick={() => handleAcceptFollowRequest(user.followRequests[0])} size={"sm"}>
+					// 	// Accept Follow Request
+					// 	// </Button>
+					// 	requesters.length > 0 ? (
+					// 		<Button onClick={() => handleAcceptFollowRequest(user.followRequests[0])} size={"sm"}>
+					// 		  Accept Follow Request
+					// 		</Button>
+					// 	  ) : null 
+					// )
+				}
 			<Flex w={"full"} justifyContent={"space-between"}>
 				<Flex gap={2} alignItems={"center"}>
 					<Text color={"gray.light"}>{user.followers.length} followers</Text>

@@ -57,7 +57,9 @@ const Header = () => {
 
 
 	return (
+
 		<Flex justifyContent={"center"} mt={6} mb='12'>
+		{user && <Button  position="fixed" left = '10px' onClick={() => navigate('/')}>Home</Button>}
 			{
 			<Text
 				cursor={"pointer"}
